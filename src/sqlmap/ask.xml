@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ask">
+    
+   
+     <insert id="create" parameterType="AskDTO" >
+     insert into ask (ask_code, ask_name)
+     values( #{ask_code}, #{ask_name} )
+     </insert>
+     
+     <select id="read" resultType="AskDTO" parameterType="String">
+     select * from ask
+  	 where ask_code	= #{ask_code}
+     </select>
+     
+     <update id="update" parameterType="AskDTO">
+     update ask
+     set ask_name=#{ask_name}
+     where ask_code	= #{ask_code}
+     </update>
+     
+     <delete id="delete" parameterType="AskDTO">
+     delete from ask
+     where ask_code = #{ask_code}
+     </delete>
+     
+     <select id="total" parameterType="Map" resultType="int">
+     select count(*) from ask
+     </select>
+     
+     <select id="list" parameterType="Map" resultType="AskDTO">
+     select ask_code, ask_name
+     from ask
+     </select>
+     
+</mapper>
+

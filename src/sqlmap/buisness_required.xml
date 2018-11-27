@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="buisness_required">
+	
+	<insert id="create" parameterType="Buisness_requiredDTO">
+	insert into buisness_required (req_num, ask_code, req_title, req_content, req_file,
+ 	req_date, buisnessID, r_code)
+ 	values((select nvl(max(req_num),0)+1 from buisness_required),
+	 #{ask_code},#{req_title},#{req_content},#{req_file},sysdate,#{buisnessID},#{r_code} )
+	</insert>
+  	
+  	<select id="read" parameterType="int" resultType="Buisness_requiredDTO">
+  	select req_num, ask_code, req_title, req_content, req_file,
+ 			req_date, buisnessID, r_code
+  	from buisness_required
+  	where req_num = #{req_num}
+  	</select>
+  	
+  	<update id="update" parameterType="Buisness_requiredDTO">
+  	update buisness_required
+  	set req_title = #{req_title} ,
+  		req_content = #{req_content} ,
+  		req_file = #{req_file},
+  		result_code = #{result_code}
+  	where req_num = #{req_num}
+  	</update>
+  	
+  	<delete id="delete" parameterType="Buisness_requiredDTO">
+  	delete from buisness_required
+  	where req_num = #{req_num}
+  	</delete>
+  	
+  	<select id="total" parameterType="Map" resultType="int">
+	select count(*) from buisness_required
+	<where>
+        	<choose>
+        		<when test="col=='ask_code'">       
+					ask_code like  '%'||#{word}||'%'           
+        		</when>
+        		<when test="col=='buisnessID'">       
+					buisnessID like  '%'||#{word}||'%'           
+        		</when>
+        		<when test="col=='r_code'">       
+					r_code like  '%'||#{word}||'%'           
+        		</when>
+        	</choose>
+       	</where>
+	</select>
+	
+	<select id="list" parameterType="Map" resultType="Buisness_requiredDTO">
+     select req_num, ask_code, req_title, req_content, req_file,
+           req_date, buisnessID, r_code,result_code,  r
+     from(
+            select req_num, ask_code, req_title, req_content, req_file,
+               req_date, buisnessID, r_code,result_code, rownum as r
+            from (
+            	select req_num, ask_code, req_title, req_content, req_file,
+          	    req_date, buisnessID, r_code, result_code
+                from buisness_required
+				<where>
+		        	<choose>
+		        		<when test="buisnessID != null and result_code != null">       
+							buisnessID=#{buisnessID} AND result_code = #{result_code}      
+		        		</when>
+		        		<when test="buisnessID != null and result_code == null">       
+							buisnessID=#{buisnessID}    
+		        		</when>
+		        		<when test="buisnessID == null and result_code != null">
+		        			result_code = #{result_code}
+		        		</when>
+		        	</choose>
+		       	</where>
+	        	    
+                order by req_num desc
+                )
+                
+            <![CDATA[
+            
+            )where r>= #{sno} and r<= #{eno}
+            ]]>    
+	    
+	</select>
+</mapper>
+
